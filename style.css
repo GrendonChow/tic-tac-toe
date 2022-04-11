@@ -39,7 +39,8 @@ h1{
 input{
     font-size: 1.5em;
     border-radius: 10px;
-    width: 100px;
+    width: 200px;
+    text-align: center;
 }
 
 h2{
@@ -54,6 +55,9 @@ h2{
 #player-two{
     color: var(--color-seconary);
     margin:0;
+}
+#header input:disabled{
+    color: black;
 }
 
 #header button{
