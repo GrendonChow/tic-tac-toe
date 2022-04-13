@@ -1,12 +1,15 @@
 const gameBoard = (() => {
-    let board = [];
-    const setSquare = (sign, index) =>{
+    let board = ['','','','','','','','',''];
+
+    const getBoard = () => board;
+    const setSquare = (sign, index) => {
         board[index] = sign;
     }
-    const resetBoard = () =>{
-        //Reset board array
+    const resetBoard = () => {
+        board = ['','','','','','','','',''];
     };
     return{
+        getBoard,
         setSquare,
         resetBoard
     };
@@ -15,8 +18,13 @@ const gameBoard = (() => {
 //Factory for creating Player objects
 const Player = (sign) => {
     this.sign = sign;
+    let name = sign;
+    const setName = (inName) => {
+        name = inName;
+    };
+    const getName = () => name;
     const getSign = () => sign;
-    return { getSign }
+    return { getSign, setName, getName }
 };
 
 const displayController = (() => {
@@ -37,41 +45,55 @@ const displayController = (() => {
 
             toggleInput();
             setDefaultName();
+            gameController.setPlayersName(oneInput.value, twoInput.value);
             displayTurn();
         }
         else { //Restart button
             mainBtn.setAttribute("id","start-button");
             mainBtn.textContent = "Start";
             infoDisplay.textContent = "Press Start";
+
             boardDisplay.classList.remove("game-container");
             boardDisplay.classList.add("game-container-hidden");
+
             toggleInput();
-            clearBoard();
             gameBoard.resetBoard();
+            gameController.resetBoard();
+            updateBoard();
         }
     };
 
     for (const square of squareBtns) {
         //Places a mark on a square based on current player turn
         square.onclick = () => {
-            square.textContent = displaySign(gameController.getCurrentSign());
-            gameBoard.setSquare(gameController.getCurrentSign(), square.getAttribute('data-index'));
-            gameController.playTurn();
-            displayTurn();
+            if(!gameController.getGameover())
+            {
+                if(gameController.getCurrentSign() == `x`)
+                {
+                    square.style.color ='#013766';
+                }
+                else{
+                    square.style.color ='#ac0e28';
+                }
+                square.textContent = displaySign(gameController.getCurrentSign());
+                gameBoard.setSquare(gameController.getCurrentSign(), square.getAttribute('data-index'));
+                displayTurn();
+                gameController.checkWinner();
+                gameController.playTurn();
+            }
         }
     }
 
     const displayTurn = () => {
         if(gameController.getCurrentSign() == 'x')
         {
-            infoDisplay.textContent = `${oneInput.value}'s turn`
+            displayStatus(`${oneInput.value}'s turn`);
         }
         else{
-            infoDisplay.textContent = `${twoInput.value}'s turn`
+            displayStatus( `${twoInput.value}'s turn`);
         }
     };
 
-    const clearBoard = () => console.log("CLEAR BOARD");
     const toggleInput = ()  => {
         oneInput.disabled = !oneInput.disabled;
         twoInput.disabled = !twoInput.disabled;
@@ -92,10 +114,23 @@ const displayController = (() => {
         return (sign == 'x'? `\u00D7`:`\u25CB`);
     }
 
+    const updateBoard = () => {
+        const board = gameBoard.getBoard();
+        for(const square of squareBtns)
+        {
+            square.textContent = board[square.getAttribute('data-index')];
+        }
+
+    }
+
+    const displayStatus = (text) =>{
+        infoDisplay.textContent = text;
+    }
+
     return{
-        clearBoard,
         toggleInput,
         displaySign,
+        displayStatus,
     };
 })();
 
@@ -103,17 +138,83 @@ const gameController = (() => {
     const playerOne = Player('x');
     const playerTwo = Player('o');
     var turn = 0;
+    var gameOver = false;
+
+    const setPlayersName = (one, two) => {
+        playerOne.setName(one);
+        playerTwo.setName(two);
+    }
 
     const playTurn = () => {
         turn++;
+        if(turn == 9)
+        {
+            gameOver = true;
+            displayController.displayStatus('Draw!')
+            console.log(turn);
+        }
+        console.log(turn);
     };
+
+    const checkWinner = () =>{
+        const winCombin = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 8]
+        ];
+
+        const board = gameBoard.getBoard();
+
+        for(var i = 0; i < winCombin.length; i++)
+        {
+            if(board[winCombin[i][0]] == `x`)
+            {
+                if(board[winCombin[i][1]] == `x`)
+                {
+                    if(board[winCombin[i][2]] == `x`)
+                    {
+                        gameOver = true;
+                        displayController.displayStatus(`${playerOne.getName()} Wins!`)
+                    }
+                }
+            }
+            else if(board[winCombin[i][0]] == `o`)
+            {
+                if(board[winCombin[i][1]] == `o`)
+                {
+                    if(board[winCombin[i][2]] == `o`)
+                    {
+                        gameOver = true;
+                        displayController.displayStatus(`${playerTwo.getName()} Wins!`)
+                    }
+                }
+            }
+        }
+    }
 
     const getCurrentSign = () => {
         return (turn % 2 == 0? playerOne.getSign() : playerTwo.getSign())
     };
 
+    const getGameover = () => gameOver;
+
+    const resetBoard = () => { 
+        turn = 0;
+        gameOver = false;
+    }
+
     return{
+        setPlayersName,
         playTurn,
+        checkWinner,
         getCurrentSign,
+        getGameover,
+        resetBoard,
+        checkWinner,
     }
 })();
