@@ -4,93 +4,41 @@ const gameBoard = (() => {
         board[index] = sign;
     }
     const resetBoard = () =>{
-
+        //Reset board array
     };
     return{setSquare, resetBoard};
 })();
 
-//Factory for creating Playyer objects
-const Player = (sign) => { 
-    let name = sign;
+//Factory for creating Player objects
+const Player = (sign) => {
+    this.sign = sign;
     const getSign = () => sign;
-    const getName = () => name;
-    const setName = inName => {
-        if(inName != "")
-        {
-           name = inName
-        }
-    };
-    return { getSign, getName, setName}
+    return { getSign }
 };
 
 const displayController = (() => {
-    //do stuff
     const oneInput = document.getElementById("player-one-name");
     const twoInput = document.getElementById("player-two-name");
     const infoDisplay = document.getElementById("info-display");
-
-    const displayTurn = (player) => infoDisplay.textContent = `${player.getName()}'s turn`;
-    const clearBoard = () => console.log("CLEAR BOARD");
-    const toggleInput = ()  => {
-        oneInput.disabled = !oneInput.disabled ;
-        twoInput.disabled = !twoInput.disabled;
-
-    };
-    const setDisplayName = (playerOne, playerTwo) => {
-        playerOne.setName(oneInput.value);
-        playerTwo.setName(twoInput.value);
-
-        //Sets input to display placeholder as name if empty
-        if(oneInput.value == "")
-        {
-            oneInput.value = "×";
-        }
-        if(twoInput.value == ""){
-            twoInput.value = "○";
-        }
-    };
-
-    const displaySign = (sign) => {
-        return (sign == 'x'? `&times;`:`&#9675;`);
-    }
-
-    return{
-        displayTurn,
-        clearBoard,
-        toggleInput,
-        setDisplayName,
-        displaySign,
-    };
-})();
-
-const gameController = (() =>{
-    /**?
-     * turn something like if(currentturn IS ODD/EVEN)
-     */
     const mainBtn = document.getElementById("start-button");
     const squareBtns = document.getElementsByClassName("square");
-    const playerOne = Player('x');
-    const playerTwo = Player('o');
-    var currentTurn = playerOne;
 
-    mainBtn.onclick = () => {
-
-        //Used to toggle start and restart button
-        if(mainBtn.textContent == "Start")
-        {
+    mainBtn.onclick = () => { //Start button
+        if(mainBtn.textContent == "Start") {
             mainBtn.setAttribute("id","restart-button");
             mainBtn.textContent = "Restart";
 
-            displayController.toggleInput();
-            displayController.setDisplayName(playerOne, playerTwo);
-            displayController.displayTurn(currentTurn);
+            toggleInput();
+            setDefaultName();
+            displayTurn();
         }
-        else{
+        else { //Restart button
             mainBtn.setAttribute("id","start-button");
             mainBtn.textContent = "Start";
 
-            displayController.toggleInput();
-            displayController.clearBoard();
+            toggleInput();
+            clearBoard();
+            gameBoard.resetBoard();
         }
     };
 
@@ -98,10 +46,65 @@ const gameController = (() =>{
     {
         //Sets mark based on current player turn
         square.onclick = () => {
-            
-            square.innerHTML = displayController.displaySign(currentTurn.getSign());
-            gameBoard.setSquare(currentTurn.getSign(), square.getAttribute('data-index'))
-            currentTurn =  (currentTurn.getSign() == 'x'? playerTwo: playerOne)
+            square.textContent = displaySign(gameController.getCurrentSign());
+            gameBoard.setSquare(gameController.getCurrentSign(), square.getAttribute('data-index'));
+            gameController.playTurn();
+            displayTurn();
         }
+    }
+    const displayTurn = () => {
+        if(gameController.getCurrentSign() == 'x')
+        {
+            infoDisplay.textContent = `${oneInput.value}'s turn`
+        }
+        else{
+            infoDisplay.textContent = `${twoInput.value}'s turn`
+        }
+    };
+
+    const clearBoard = () => console.log("CLEAR BOARD");
+    const toggleInput = ()  => {
+        oneInput.disabled = !oneInput.disabled;
+        twoInput.disabled = !twoInput.disabled;
+
+    };
+    //Sets input to display placeholder if empty
+    const setDefaultName = () => {
+        if(oneInput.value == "")
+        {
+            oneInput.value = "\u00D7";
+        }
+        if(twoInput.value == ""){
+            twoInput.value = "\u25CB";
+        }
+    };
+
+    const displaySign = (sign) => {
+        return (sign == 'x'? `\u00D7`:`\u25CB`);
+    }
+
+    return{
+        clearBoard,
+        toggleInput,
+        displaySign,
+    };
+})();
+
+const gameController = (() =>{
+    const playerOne = Player('x');
+    const playerTwo = Player('o');
+    var turn = 0;
+
+    const playTurn = () => {
+        turn++;
+    };
+
+    const getCurrentSign = () => {
+        return (turn % 2 == 0? playerOne.getSign() : playerTwo.getSign())
+    };
+
+    return{
+        playTurn,
+        getCurrentSign,
     }
 })();
