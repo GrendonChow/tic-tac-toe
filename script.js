@@ -18,51 +18,68 @@ const Player = (sign) => {
 
 const displayController = (() => {
     //do stuff
+    const oneInput = document.getElementById("player-one-name");
+    const twoInput = document.getElementById("player-two-name");
     const infoDisplay = document.getElementById("info-display");
-    const nextTurn = () => infoDisplay.textContent = "Somones turn";
+
+    const displayTurn = (player) => infoDisplay.textContent = `${player.getName()}'s turn`;
     const clearBoard = () => console.log("CLEAR BOARD");
+    const toggleInput = ()  => {
+        oneInput.disabled = !oneInput.disabled ;
+        twoInput.disabled = !twoInput.disabled;
+
+    };
+    const setDisplayName = (playerOne, playerTwo) => {
+        playerOne.setName(oneInput.value);
+        playerTwo.setName(twoInput.value);
+
+        //Sets input to display placeholder as name if empty
+        if(oneInput.value == "")
+        {
+            oneInput.value = "×";
+        }
+        if(twoInput.value == ""){
+            twoInput.value = "○";
+        }
+    };
+
     return{
-        nextTurn,
+        displayTurn,
         clearBoard,
+        toggleInput,
+        setDisplayName,
     };
 })();
 
 const gameController = (() =>{
+    /**?
+     * turn something like if(currentturn IS ODD/EVEN)
+     */
     const mainBtn = document.getElementById("start-button");
     const playerOne = Player('x');
     const playerTwo = Player('o');
+    const currentTurn = playerOne;
 
     mainBtn.onclick = () => {
         const oneInput = document.getElementById("player-one-name");
         const twoInput = document.getElementById("player-two-name");
+
+        //Used to toggle start and restart button
         if(mainBtn.textContent == "Start")
         {
             mainBtn.setAttribute("id","restart-button");
             mainBtn.textContent = "Restart";
 
-
-            if(oneInput.value == "")
-            {
-                console.log("ADSASD")
-                oneInput.value = "×";
-            }
-            if(twoInput.value == ""){
-                twoInput.value = "○";
-            }
-
-            playerOne.setName(oneInput.value);
-            playerTwo.setName(twoInput.value);
-            displayController.nextTurn();
-            oneInput.disabled = true;
-            twoInput.disabled = true;
+            displayController.toggleInput();
+            displayController.setDisplayName(playerOne, playerTwo);
+            displayController.displayTurn(currentTurn);
         }
         else{
             mainBtn.setAttribute("id","start-button");
             mainBtn.textContent = "Start";
-            displayController.clearBoard();
-            oneInput.disabled = false;
-            twoInput.disabled = false;
-        }
 
+            displayController.toggleInput();
+            displayController.clearBoard();
+        }
     }
 })();
