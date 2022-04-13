@@ -2,11 +2,15 @@ const gameBoard = (() => {
     let board = [];
     const setSquare = (sign, index) =>{
         board[index] = sign;
+        console.log(board);
     }
     const resetBoard = () =>{
         //Reset board array
     };
-    return{setSquare, resetBoard};
+    return{
+        setSquare,
+        resetBoard
+    };
 })();
 
 //Factory for creating Player objects
@@ -17,6 +21,7 @@ const Player = (sign) => {
 };
 
 const displayController = (() => {
+    const boardDisplay = document.querySelector(".game-container-hidden")
     const oneInput = document.getElementById("player-one-name");
     const twoInput = document.getElementById("player-two-name");
     const infoDisplay = document.getElementById("info-display");
@@ -27,6 +32,9 @@ const displayController = (() => {
         if(mainBtn.textContent == "Start") {
             mainBtn.setAttribute("id","restart-button");
             mainBtn.textContent = "Restart";
+
+            boardDisplay.classList.remove("game-container-hidden");
+            boardDisplay.classList.add("game-container");
 
             toggleInput();
             setDefaultName();
@@ -42,9 +50,8 @@ const displayController = (() => {
         }
     };
 
-    for (const square of squareBtns)
-    {
-        //Sets mark based on current player turn
+    for (const square of squareBtns) {
+        //Places a mark on a square based on current player turn
         square.onclick = () => {
             square.textContent = displaySign(gameController.getCurrentSign());
             gameBoard.setSquare(gameController.getCurrentSign(), square.getAttribute('data-index'));
@@ -52,6 +59,7 @@ const displayController = (() => {
             displayTurn();
         }
     }
+
     const displayTurn = () => {
         if(gameController.getCurrentSign() == 'x')
         {
@@ -90,7 +98,7 @@ const displayController = (() => {
     };
 })();
 
-const gameController = (() =>{
+const gameController = (() => {
     const playerOne = Player('x');
     const playerTwo = Player('o');
     var turn = 0;
