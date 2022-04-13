@@ -12,7 +12,6 @@ body{
     display: flex;
     flex-direction: column;
     margin: 0;
-
 }
 
 #header{
@@ -118,6 +117,7 @@ h2{
 #info-display{
     height: 1.5em;
     margin:10px;
+    
 }
 .square{
     display: flex;
@@ -129,8 +129,6 @@ h2{
     cursor: pointer;
     user-select: none;
 }
-
-
 
 .square:hover{
     transition: background-color 0.2s linear;
