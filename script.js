@@ -1,5 +1,12 @@
 const gameBoard = (() => {
     let board = [];
+    const setSquare = (sign, index) =>{
+        board[index] = sign;
+    }
+    const resetBoard = () =>{
+
+    };
+    return{setSquare, resetBoard};
 })();
 
 //Factory for creating Playyer objects
@@ -43,11 +50,16 @@ const displayController = (() => {
         }
     };
 
+    const displaySign = (sign) => {
+        return (sign == 'x'? `&times;`:`&#9675;`);
+    }
+
     return{
         displayTurn,
         clearBoard,
         toggleInput,
         setDisplayName,
+        displaySign,
     };
 })();
 
@@ -56,13 +68,12 @@ const gameController = (() =>{
      * turn something like if(currentturn IS ODD/EVEN)
      */
     const mainBtn = document.getElementById("start-button");
+    const squareBtns = document.getElementsByClassName("square");
     const playerOne = Player('x');
     const playerTwo = Player('o');
-    const currentTurn = playerOne;
+    var currentTurn = playerOne;
 
     mainBtn.onclick = () => {
-        const oneInput = document.getElementById("player-one-name");
-        const twoInput = document.getElementById("player-two-name");
 
         //Used to toggle start and restart button
         if(mainBtn.textContent == "Start")
@@ -80,6 +91,17 @@ const gameController = (() =>{
 
             displayController.toggleInput();
             displayController.clearBoard();
+        }
+    };
+
+    for (const square of squareBtns)
+    {
+        //Sets mark based on current player turn
+        square.onclick = () => {
+            
+            square.innerHTML = displayController.displaySign(currentTurn.getSign());
+            gameBoard.setSquare(currentTurn.getSign(), square.getAttribute('data-index'))
+            currentTurn =  (currentTurn.getSign() == 'x'? playerTwo: playerOne)
         }
     }
 })();
