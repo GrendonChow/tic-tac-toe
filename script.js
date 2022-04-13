@@ -83,8 +83,8 @@ const displayController = (() => {
                 square.textContent = displaySign(gameController.getCurrentSign());
                 gameBoard.setSquare(gameController.getCurrentSign(), square.getAttribute('data-index'));
                 displayTurn();
-                gameController.checkWinner();
                 gameController.playTurn();
+                gameController.checkWinner();
             }
         }
     }
