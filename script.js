@@ -2,7 +2,6 @@ const gameBoard = (() => {
     let board = [];
     const setSquare = (sign, index) =>{
         board[index] = sign;
-        console.log(board);
     }
     const resetBoard = () =>{
         //Reset board array
@@ -43,7 +42,9 @@ const displayController = (() => {
         else { //Restart button
             mainBtn.setAttribute("id","start-button");
             mainBtn.textContent = "Start";
-
+            infoDisplay.textContent = "Press Start";
+            boardDisplay.classList.remove("game-container");
+            boardDisplay.classList.add("game-container-hidden");
             toggleInput();
             clearBoard();
             gameBoard.resetBoard();
