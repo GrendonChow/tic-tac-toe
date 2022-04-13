@@ -24,11 +24,15 @@ const Player = (sign) => {
     };
     const getName = () => name;
     const getSign = () => sign;
-    return { getSign, setName, getName }
+    return { 
+        getSign,
+        setName, 
+        getName,
+    }
 };
 
 const displayController = (() => {
-    const boardDisplay = document.querySelector(".game-container-hidden")
+    const boardDisplay = document.querySelector(".game-container-hidden");
     const oneInput = document.getElementById("player-one-name");
     const twoInput = document.getElementById("player-two-name");
     const infoDisplay = document.getElementById("info-display");
@@ -40,6 +44,7 @@ const displayController = (() => {
             mainBtn.setAttribute("id","restart-button");
             mainBtn.textContent = "Restart";
 
+            //board transition animation
             boardDisplay.classList.remove("game-container-hidden");
             boardDisplay.classList.add("game-container");
 
@@ -94,6 +99,7 @@ const displayController = (() => {
         }
     };
 
+    //Enanles/disables name input
     const toggleInput = ()  => {
         oneInput.disabled = !oneInput.disabled;
         twoInput.disabled = !twoInput.disabled;
@@ -120,16 +126,14 @@ const displayController = (() => {
         {
             square.textContent = board[square.getAttribute('data-index')];
         }
-
     }
 
-    const displayStatus = (text) =>{
+    const displayStatus = (text) => {
         infoDisplay.textContent = text;
     }
 
-    return{
+    return {
         toggleInput,
-        displaySign,
         displayStatus,
     };
 })();
@@ -140,23 +144,17 @@ const gameController = (() => {
     var turn = 0;
     var gameOver = false;
 
-    const setPlayersName = (one, two) => {
-        playerOne.setName(one);
-        playerTwo.setName(two);
-    }
-
     const playTurn = () => {
         turn++;
-        if(turn == 9)
+        if(turn == 9) //Draw game
         {
             gameOver = true;
             displayController.displayStatus('Draw!')
-            console.log(turn);
         }
-        console.log(turn);
     };
 
-    const checkWinner = () =>{
+    //Compares the game board with all winning combinations to determine winner
+    const checkWinner = () => {
         const winCombin = [
             [0, 1, 2],
             [3, 4, 5],
@@ -170,31 +168,29 @@ const gameController = (() => {
 
         const board = gameBoard.getBoard();
 
-        for(var i = 0; i < winCombin.length; i++)
-        {
-            if(board[winCombin[i][0]] == `x`)
-            {
-                if(board[winCombin[i][1]] == `x`)
-                {
-                    if(board[winCombin[i][2]] == `x`)
-                    {
+        for(var i = 0; i < winCombin.length; i++) {
+            if(board[winCombin[i][0]] == `x`)  {
+                if(board[winCombin[i][1]] == `x`) {
+                    if(board[winCombin[i][2]] == `x`) {
                         gameOver = true;
                         displayController.displayStatus(`${playerOne.getName()} Wins!`)
                     }
                 }
             }
-            else if(board[winCombin[i][0]] == `o`)
-            {
-                if(board[winCombin[i][1]] == `o`)
-                {
-                    if(board[winCombin[i][2]] == `o`)
-                    {
+            else if(board[winCombin[i][0]] == `o`) {
+                if(board[winCombin[i][1]] == `o`) {
+                    if(board[winCombin[i][2]] == `o`) {
                         gameOver = true;
                         displayController.displayStatus(`${playerTwo.getName()} Wins!`)
                     }
                 }
             }
         }
+    }
+
+    const setPlayersName = (one, two) => {
+        playerOne.setName(one);
+        playerTwo.setName(two);
     }
 
     const getCurrentSign = () => {
@@ -208,13 +204,12 @@ const gameController = (() => {
         gameOver = false;
     }
 
-    return{
-        setPlayersName,
+    return {
         playTurn,
         checkWinner,
+        setPlayersName,
         getCurrentSign,
         getGameover,
         resetBoard,
-        checkWinner,
     }
 })();
