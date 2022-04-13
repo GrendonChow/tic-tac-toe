@@ -4,3 +4,6 @@ have learnt through the [Odin Project](https://www.theodinproject.com/lessons/ja
 
 Pressing the start button plays the game. The user is also able to optionally input
 whatever text for both player one and two names. The restart button will reset the game state.
+
+### To Do
+-May optionally add a basic AI player
